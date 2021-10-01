@@ -1,81 +1,49 @@
-#include <iostream>
-#include <stack>
-#include <string>
+// CPP program to find infix for a given postfix expression.
+#include <bits/stdc++.h>
 using namespace std;
 
-int precedence (char ch) {
-    if (ch == '+' || ch == '-') {
-        return 1;
-    }
-    else if (ch == '*' || ch == '/') {
-        return 2;
-    }
-    else if (ch == '^') {
-        return 3;
-    }
-    else {
-        return 0;
-    }
+bool isOperand(char x)
+{
+return (x >= 'a' && x <= 'z') ||
+		(x >= 'A' && x <= 'Z');
 }
 
-string topostfix(string str){
-    stack <char> s;
-    string expression;
-    s.push('_');
-    
-    for(int i = 0; i < str.length(); i++){
-        
-        if (isalnum(str[i])) {
-            expression += str[i];
-        }
-        
-        else if (str[i] == '(') {
-            s.push('(');
-        }
-        
-        else if (str[i] == '^') {
-            s.push('^');
-        }
-        
-        else if (str[i] == ')') {
-            while (s.top() != '(' && s.top() != '#') {
-                expression += s.top();
-                s.pop();
-    
-            }
-            s.pop();
-        }
-        
-        else {
-            if (precedence(str[i]) > precedence(s.top())) {
-                s.push(str[i]);
-            }
-            
-            else {
-                while (s.top() != '_' && precedence(str[i]) <= precedence(s.top())) {
-                    expression += s.top();
-                    s.pop();
-                }
-                s.push(str[i]);
-            }
-        }
-        }
-        
-        while (s.top() != '_') {
-        expression += s.top();
-        s.pop();
-    
-    }
-    return expression;
+// Get Infix for a given postfix expression
+string getInfix(string exp)
+{
+	stack<string> s;
+
+	for (int i=0; exp[i]!='\0'; i++)
+	{
+		if (isOperand(exp[i]))
+		{
+		string op(1, exp[i]);
+		s.push(op);
+		}
+
+		// We assume that input is a valid postfix and expect
+		// an operator.
+		else
+		{
+			string op1 = s.top();
+			s.pop();
+			string op2 = s.top();
+			s.pop();
+			s.push("(" + op2 + exp[i] +
+				op1 + ")");
+		}
+	}
+
+	// There must be a single element
+	// in stack now which is the required
+	// infix.
+	return s.top();
 }
 
-
+// Driver code
 int main()
 {
-    string s;
-    cout << "Enter the expression: ";
-    cin >>s;
-    cout << topostfix(s);
-
-    return 0;
+	string exp = "ab*c+";
+	cout << getInfix(exp);
+	return 0;
 }
